@@ -5,20 +5,61 @@
 
 ---
 
+## Architecture Diagram
+
+```mermaid
+flowchart TD
+    User(["👤 User\n(Sales / PM / RD)"])
+    Teams["Microsoft Teams\n/ Azure Web Chat"]
+    Bot["bot.py\nBot Framework SDK\nActivity routing · Card dispatch · Session state"]
+
+    subgraph Pipeline["6-Agent Pipeline  —  pipeline.py"]
+        S1["S1 Gatekeeper\nExtract Who/Scenario/Problem/Expected\nVerdict: approved / rejected / info_needed"]
+        S2["S2 Value Transform\nGenerate acceptance criteria\n& test cases"]
+        S3["S3 Scenario Test\nTechnical plan · Self-test\nApprove / Reject / Defer"]
+        S4["S4 Release Review\n⛔ HARD GATE\nscenario_verified required"]
+        S5["S5 Feedback Collect\nSurvey design · Response analysis\nComplaint clustering"]
+        S6["S6 Retrospective\nRework pattern analysis\nWrite knowledge to Foundry IQ"]
+    end
+
+    subgraph LLM["AI Engine"]
+        DeepSeek["DeepSeek API\n(OpenAI-compatible SDK)\nagent_runner.py"]
+    end
+
+    subgraph Cards["Human-in-the-Loop\ncards.py — 17 Adaptive Cards"]
+        AC["Editable Adaptive Cards\nAI pre-fills · Human edits · Confirms\nAll stages interactive"]
+    end
+
+    subgraph IQ["🔍 Foundry IQ  —  Azure AI Search"]
+        Search["foundry-iq-index\n14-field unified schema\nsemantic search"]
+        Alert["⚠️ Pitfall Alert\nSimilar historical cases\nsurfaced before S1"]
+        Archive["13+ write points\nEvery stage output archived\nRetrospective knowledge entries"]
+    end
+
+    subgraph Graph["Microsoft Graph\nwork_iq.py"]
+        UserLookup["User lookup\nHandoff routing validation"]
+    end
+
+    User --> Teams --> Bot
+    Bot --> S1
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6
+
+    Pipeline <--> DeepSeek
+    Pipeline <--> AC
+    AC --> Bot --> Teams --> User
+
+    S1 -.->|"search before start"| Search
+    Search --> Alert -.->|"alert card"| Bot
+    S6 -->|"write knowledge"| Archive
+    Pipeline -->|"archive each stage"| Archive
+    Archive --> Search
+
+    Bot <-.-> UserLookup
+```
+
 ## System Overview
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                   Teams / Web Chat                          │
-│              (only interface — input & output)              │
-└────────────────────────┬────────────────────────────────────┘
-                         │ Bot Framework WebSocket
-┌────────────────────────▼────────────────────────────────────┐
-│                      bot.py                                  │
-│   Activity routing · Session state · Adaptive Card dispatch  │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────────┐
 │                   pipeline.py                                │
 │              6-Stage Orchestrator                            │
 │                                                              │

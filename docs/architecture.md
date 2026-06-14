@@ -17,7 +17,7 @@ flowchart LR
     classDef llm       fill:#FEF9E7,stroke:#D4AC0D,stroke-width:2px,color:#1a1a1a
     classDef card      fill:#F0FFF4,stroke:#27AE60,stroke-width:1.5px,color:#1a1a1a
     classDef iq        fill:#F4ECF7,stroke:#7D3C98,stroke-width:2px,color:#1a1a1a
-    classDef graph     fill:#FDF2E9,stroke:#CA6F1E,stroke-width:1.5px,color:#1a1a1a
+    classDef msgraph   fill:#FDF2E9,stroke:#CA6F1E,stroke-width:1.5px,color:#1a1a1a
 
     %% ── Input Layer ──────────────────────────────────────
     U(["👤 User\nSales · PM · RD · QA"]):::user
@@ -62,7 +62,7 @@ flowchart LR
 
     %% ── Microsoft Graph ──────────────────────────────────
     subgraph GR["  👥  Microsoft Graph  "]
-        UL["Work IQ\nUser lookup\nHandoff routing"]:::graph
+        UL["Work IQ\nUser lookup\nHandoff routing"]:::msgraph
     end
 
     %% ── Connections ──────────────────────────────────────

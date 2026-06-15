@@ -472,13 +472,16 @@ class RequirementBot(ActivityHandler):
         state: PipelineState = pipeline_data["state"]
         current_stage = pipeline_data["stage"]
 
-        # Rollback actions are cross-stage by design — skip stage check for them
+        # Rollback actions are cross-stage by design — skip stage check for them.
+        # Also allow actions from earlier stages (e.g. old card clicked after rollback reset stage).
         _rollback_actions = {"rollback_retry", "rollback_escalate", "rollback_abandon", "feedback_submit"}
-        if stage != current_stage and action not in _rollback_actions:
-            await turn_context.send_activity(
-                f"⚠️ Action for stage {stage}, but at stage {current_stage}. Ignored."
-            )
-            return
+        if action not in _rollback_actions and stage != current_stage:
+            # Allow if pipeline was rolled back and stage was reset to an earlier value
+            if stage != pipeline_data.get("stage"):
+                await turn_context.send_activity(
+                    f"⚠️ This card is outdated (stage {stage} vs current stage {current_stage}). Please use the latest card."
+                )
+                return
 
         form = turn_context.activity.value or {}
 

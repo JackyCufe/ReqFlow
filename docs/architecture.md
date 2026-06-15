@@ -1,6 +1,7 @@
 # Architecture — IQ Relay
 
-> Track: Agents League Hackathon 2026 — Reasoning Agents
+> Agents League Hackathon 2026
+> Microsoft IQ: Foundry IQ + Work IQ
 > Core principle: AI structures, humans decide, the organization remembers
 
 ---

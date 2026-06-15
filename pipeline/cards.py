@@ -256,28 +256,79 @@ def foundry_iq_alert_card(similar_reqs: list[dict]) -> dict | None:
 
 
 def foundry_iq_result_card(question: str, results: list[dict]) -> dict:
-    sections: list[Any] = []
+    """Foundry IQ search result card — clean layout, one result per block."""
     if not results:
         return _basic_card(
             "🔍 Foundry IQ Search",
-            [f"_No records found for: {question}_"],
-            "Suggest: submit as new requirement to start pipeline",
+            [f"_No records found for: {question}_\n\nSubmit as a new requirement to start the pipeline."],
         )
+
+    body: list[dict] = [
+        {"type": "TextBlock", "text": f"🔍 Foundry IQ: {question[:60]}",
+         "weight": "Bolder", "size": "Large", "wrap": True},
+        {"type": "TextBlock",
+         "text": f"**{len(results)} record{'s' if len(results) != 1 else ''} from organizational memory**",
+         "wrap": True, "spacing": "Small", "color": "Accent", "size": "Small"},
+    ]
+
     for i, r in enumerate(results[:3]):
-        content = r.get("content") or r
+        content = r.get("content") or {}
         pitfalls = content.get("pitfalls", []) if isinstance(content, dict) else []
-        req_title = r.get("requirement_title") or (content.get("requirement", "") if isinstance(content, dict) else "")
-        resolution = content.get("resolution", "") if isinstance(content, dict) else ""
-        sections.append({
-            f"[{i+1}] {r.get('id', '')}": str(req_title)[:80],
-            "Resolution": str(resolution)[:100],
-            "Pitfalls": "|".join(pitfalls[:2]) if pitfalls else "None",
+        req_title = r.get("requirement_title") or (
+            content.get("requirement", "") if isinstance(content, dict) else "")
+        resolution = (content.get("resolution", "") if isinstance(content, dict) else "") or ""
+
+        # Separator between results
+        body.append({"type": "TextBlock", "text": "---", "spacing": "Medium"})
+
+        # Result header
+        body.append({
+            "type": "TextBlock",
+            "text": f"**[{i+1}]** {str(req_title)[:80]}",
+            "wrap": True, "weight": "Bolder", "spacing": "Small",
         })
-    return _basic_card(
-        f"🔍 Foundry IQ: {question[:60]}",
-        sections,
-        f"{len(results)} records from organizational memory",
-    )
+
+        # Resolution
+        if resolution:
+            body.append({
+                "type": "TextBlock",
+                "text": f"✅ **Resolution:** {str(resolution)[:120]}{'...' if len(resolution) > 120 else ''}",
+                "wrap": True, "spacing": "Small", "size": "Small",
+            })
+
+        # Pitfalls — each on its own line
+        if pitfalls:
+            body.append({
+                "type": "TextBlock",
+                "text": "⚠️ **Pitfalls:**",
+                "wrap": True, "spacing": "Small", "weight": "Bolder", "size": "Small",
+            })
+            for p in pitfalls[:3]:
+                body.append({
+                    "type": "TextBlock",
+                    "text": f"• {str(p)[:120]}{'...' if len(str(p)) > 120 else ''}",
+                    "wrap": True, "spacing": "None", "size": "Small",
+                })
+        else:
+            body.append({
+                "type": "TextBlock",
+                "text": "⚠️ **Pitfalls:** None recorded",
+                "wrap": True, "spacing": "Small", "size": "Small", "isSubtle": True,
+            })
+
+    body.append({
+        "type": "TextBlock",
+        "text": "_Learn from history. Don't repeat mistakes._",
+        "wrap": True, "spacing": "Medium", "isSubtle": True, "size": "Small",
+    })
+
+    return {
+        "type": "AdaptiveCard",
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "version": "1.3",
+        "body": body,
+    }
+
 
 
 def card_activity(card: dict) -> dict:

@@ -346,8 +346,8 @@ def gatekeeping_edit_card(schema1: dict) -> dict:
          "value": gk.get("problem") or "", "isMultiline": True},
         {"type": "Input.Text", "id": "expected_outcome", "label": "🎯 Expected Outcome",
          "value": gk.get("expected_outcome") or "", "isMultiline": True},
-        {"type": "Input.Text", "id": "next_person", "label": "👤 下一级接手人 (PM姓名)",
-         "placeholder": "e.g. 张三 / Zhang San", "value": "Jacky", "isRequired": True},
+        {"type": "Input.Text", "id": "next_person", "label": "👤 Next Owner (PM)",
+         "placeholder": "e.g. Zhang San", "value": "Jacky", "isRequired": True},
     ]
 
     card = {
@@ -481,8 +481,8 @@ def stage2_confirm_card(schema2: dict) -> dict:
                  "label": "✏️ Test Cases (edit if needed)",
                  "value": tc_text,
                  "isMultiline": True})
-    body.append({"type": "Input.Text", "id": "next_person", "label": "👤 下一级接手人 (RD姓名)",
-                 "placeholder": "e.g. 李四 / Li Si", "value": "Jacky", "isRequired": True})
+    body.append({"type": "Input.Text", "id": "next_person", "label": "👤 Next Owner (RD)",
+                 "placeholder": "e.g. Li Si", "value": "Jacky", "isRequired": True})
 
     return {
         "type": "AdaptiveCard", "version": "1.5",
@@ -519,8 +519,8 @@ def stage3a_estimate_card(tech_plan: str = "", workload_days: float = 3, risks: 
          "value": risks,
          "placeholder": "e.g. Factory lighting variance may degrade model accuracy; need on-site calibration",
          "isMultiline": True, "isRequired": True},
-        {"type": "Input.Text", "id": "next_person", "label": "👤 下一级接手人 (RD自测)",
-         "placeholder": "e.g. 自己 / Same person", "value": "Jacky", "isRequired": True},
+        {"type": "Input.Text", "id": "next_person", "label": "👤 Next Owner (Self-test)",
+         "placeholder": "e.g. Same person", "value": "Jacky", "isRequired": True},
     ]
     return {
         "type": "AdaptiveCard", "version": "1.5",
@@ -560,16 +560,16 @@ def stage3b_result_card() -> dict:
         {"type": "Input.ChoiceSet", "id": "approval_result", "label": "📋 Approval Decision",
          "style": "expanded", "isRequired": True,
          "choices": [
-             {"title": "✅ 通过 — Approved", "value": "approve"},
-             {"title": "❌ 拒绝 — Rejected", "value": "reject"},
-             {"title": "⏸️ 延期 — Deferred", "value": "defer"},
-             {"title": "↗️ 转交 — Delegated", "value": "delegate"},
+             {"title": "✅ Approved", "value": "approve"},
+             {"title": "❌ Rejected", "value": "reject"},
+             {"title": "⏸️ Deferred", "value": "defer"},
+             {"title": "↗️ Delegated", "value": "delegate"},
          ]},
-        {"type": "Input.Text", "id": "approval_note", "label": "📝 审批备注 (拒绝/延期/转交时必填)",
-         "placeholder": "e.g. 自测部分通过，需要修复边缘case",
+        {"type": "Input.Text", "id": "approval_note", "label": "📝 Approval Note (required if rejected/deferred/delegated)",
+         "placeholder": "e.g. Self-test partially passed, edge cases need fixing",
          "isMultiline": True},
-        {"type": "Input.Text", "id": "next_person", "label": "👤 下一级接手人 (发版审批人姓名)",
-         "placeholder": "e.g. 王五 / Wang Wu", "value": "Jacky", "isRequired": True},
+        {"type": "Input.Text", "id": "next_person", "label": "👤 Next Owner (Release Approver)",
+         "placeholder": "e.g. Wang Wu", "value": "Jacky", "isRequired": True},
     ]
     return {
         "type": "AdaptiveCard", "version": "1.5",
@@ -633,16 +633,16 @@ def stage4_release_card(
         {"type": "Input.ChoiceSet", "id": "approval_result", "label": "📋 Approval Decision",
          "style": "expanded", "isRequired": True,
          "choices": [
-             {"title": "✅ 通过 — Approved", "value": "approve"},
-             {"title": "❌ 拒绝 — Rejected", "value": "reject"},
-             {"title": "⏸️ 延期 — Deferred", "value": "defer"},
-             {"title": "↗️ 转交 — Delegated", "value": "delegate"},
+             {"title": "✅ Approved", "value": "approve"},
+             {"title": "❌ Rejected", "value": "reject"},
+             {"title": "⏸️ Deferred", "value": "defer"},
+             {"title": "↗️ Delegated", "value": "delegate"},
          ]},
-        {"type": "Input.Text", "id": "approval_note", "label": "📝 审批备注 (拒绝/延期/转交时必填)",
-         "placeholder": "e.g. 客户场景测试未全部通过，需要补充边缘case",
+        {"type": "Input.Text", "id": "approval_note", "label": "📝 Approval Note (required if rejected/deferred/delegated)",
+         "placeholder": "e.g. Customer scenario tests not fully passed, edge cases needed",
          "isMultiline": True},
-        {"type": "Input.Text", "id": "next_person", "label": "👤 下一级接手人 (售后姓名)",
-         "placeholder": "e.g. 赵六 / Zhao Liu", "value": "Jacky", "isRequired": True},
+        {"type": "Input.Text", "id": "next_person", "label": "👤 Next Owner (After-sales)",
+         "placeholder": "e.g. Zhao Liu", "value": "Jacky", "isRequired": True},
     ]
     return {
         "type": "AdaptiveCard", "version": "1.5",
@@ -755,8 +755,8 @@ def stage5a_survey_card(questions: str = "", req_id: str = "") -> dict:
              "4. Any unexpected issues or performance problems?"
          ),
          "isMultiline": True, "isRequired": True},
-        {"type": "Input.Text", "id": "next_person", "label": "👤 下一级接手人 (反馈收集团队)",
-         "placeholder": "e.g. 售后团队 / After-sales team", "value": "Jacky", "isRequired": True},
+        {"type": "Input.Text", "id": "next_person", "label": "👤 Next Owner (Feedback Team)",
+         "placeholder": "e.g. After-sales team", "value": "Jacky", "isRequired": True},
     ]
     return {
         "type": "AdaptiveCard", "version": "1.5",
